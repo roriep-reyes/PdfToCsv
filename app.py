@@ -35,3 +35,26 @@ def extract_words(page: fitz.Page):
     words = page.get_text("words") # x0, y0, x1, y1, word, block_no, word_no
     words = [(w[0], w[1], w[2], w[3], w[4], w[5], w[6]) for w in words] # keep block/line no
     return words
+
+def group_lines(words, y_tol=4):
+    """Group words into lines by line_no: returns list of dicts with text and bbox."""
+    lines = {}
+    for (x0,y0,x1,y1,word,block_no,line_no) in words:
+        key = (block_no, line_no)
+        if key not in lines:
+            lines[key] = {"text": [], "x0": x0, "y0": y0, "x1": x1, "y1": y1,
+                          "block_no": block_no, "line_no": line_no}
+
+        else:
+            lines[key]["x0"] = min(lines[key]["x0"], x0)
+            lines[key]["y0"] = min(lines[key]["y0"], y0)
+            lines[key]["x1"] = min(lines[key]["x1"], x1)
+            lines[key]["y1"] = min(lines[key]["y1"], y1)
+        lines[key["text"].append(word)]
+    # convert to list, join text
+    out = []
+    for k in sorted(lines.key(), key=lambda k: (lines[k]["y0"], lines[k]["x0"])):
+        it = lines[key]
+        it["text"] = " ".join(it["text"]).strip()
+        out.append(it)
+    return out
