@@ -24,3 +24,8 @@ CITY_ST_RE = re.compile(
     r"\b([A-Za-z\.\-\s]+?),\s*([A-Z]{2})\s+(\d{5}(?:-\d{4})?)\b"
 )
 
+def render_page_to_image(page: fitz.Page, zoom: float = 2.0) -> Image.Image:
+    mat = fitz.Matrix(zoom, zoom)
+    pix = page.get_pixmap(matrix=mat, alpha=False)
+    img = Image.frombytes("RGB", [pix.width, pix.height], pix.samples)
+    return img
