@@ -29,3 +29,9 @@ def render_page_to_image(page: fitz.Page, zoom: float = 2.0) -> Image.Image:
     pix = page.get_pixmap(matrix=mat, alpha=False)
     img = Image.frombytes("RGB", [pix.width, pix.height], pix.samples)
     return img
+
+def extract_words(page: fitz.Page):
+    """"Return words with positions: list of (x0, y0, x1, y1, word)"""
+    words = page.get_text("words") # x0, y0, x1, y1, word, block_no, word_no
+    words = [(w[0], w[1], w[2], w[3], w[4], w[5], w[6]) for w in words] # keep block/line no
+    return words
